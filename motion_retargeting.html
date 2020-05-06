@@ -1,17 +1,117 @@
 
-<!DOCTYPE html><!-- Last Published: Fri Mar 27 2020 21:28:31 GMT+0000 (Coordinated Universal Time) --><html data-wf-domain="www.matthewtancik.com" data-wf-page="5e6fb768456f961381500a5f" data-wf-site="51e0d73d83d06baa7a00000f"><head><meta charset="utf-8"/><title>NeRF: Neural Radiance Fields</title><meta content="A method for synthesizing novel views of complex scenes by optimizing an underlying continuous volumetric scene function using a sparse set of input views." name="description"/><meta content="Skeleton-Aware Networks" property="og:title"/><meta content="An end-to-end method for cross-structural motion retargeting" property="og:description"/><meta content="http://people.eecs.berkeley.edu/~tancik/nerf/website_renders/images/nerf_graph.jpg" property="og:image"/><meta content="summary" name="twitter:card"/><meta content="width=device-width, initial-scale=1" name="viewport"/><link href="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/css/matthewtancik.webflow.5ce89c2fc.min.css" rel="stylesheet" type="text/css"/><script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script><script type="text/javascript">WebFont.load({  google: {    families: ["Lato:100,100italic,300,300italic,400,400italic,700,700italic,900,900italic","Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic","Ubuntu:300,300italic,400,400italic,500,500italic,700,700italic","Changa One:400,400italic","Open Sans:300,300italic,400,400italic,600,600italic,700,700italic,800,800italic","Varela Round:400","Bungee Shade:regular","Roboto:300,regular,500"]  }});</script><!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif]--><script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script><link href="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5aaddbdee8d43ceeae2f2e4c_favicon-32x32.png" rel="shortcut icon" type="image/x-icon"/><link href="https://y7v4p6k4.ssl.hwcdn.net/51db7fcf29a6f36b2a000001/51e06d302f5394c87600002a_webclip-comet.png" rel="apple-touch-icon"/><script type="text/javascript">var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-46779055-1'], ['_trackPageview']);(function() {  var ga = document.createElement('script');  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script><style>
+<!DOCTYPE html><!-- Last Published: Fri Mar 27 2020 21:28:31 GMT+0000 (Coordinated Universal Time) --><html data-wf-domain="www.matthewtancik.com" data-wf-page="5e6fb768456f961381500a5f" data-wf-site="51e0d73d83d06baa7a00000f"><head><meta charset="utf-8"/><title>Skeleton-Aware Networks</title><meta content="A motion processing framework for cross-strutcural motion retargeting." name="description"/><meta content="Skeleton-Aware Networks" property="og:title"/><meta content="An end-to-end method for cross-structural motion retargeting" property="og:description"/><meta content="http://people.eecs.berkeley.edu/~tancik/nerf/website_renders/images/nerf_graph.jpg" property="og:image"/><meta content="summary" name="twitter:card"/><meta content="width=device-width, initial-scale=1" name="viewport"/><link href="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/css/matthewtancik.webflow.5ce89c2fc.min.css" rel="stylesheet" type="text/css"/><script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script><script type="text/javascript">WebFont.load({  google: {    families: ["Lato:100,100italic,300,300italic,400,400italic,700,700italic,900,900italic","Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic","Ubuntu:300,300italic,400,400italic,500,500italic,700,700italic","Changa One:400,400italic","Open Sans:300,300italic,400,400italic,600,600italic,700,700italic,800,800italic","Varela Round:400","Bungee Shade:regular","Roboto:300,regular,500"]  }});</script><!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif]--><script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script><link href="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5aaddbdee8d43ceeae2f2e4c_favicon-32x32.png" rel="shortcut icon" type="image/x-icon"/><link href="https://y7v4p6k4.ssl.hwcdn.net/51db7fcf29a6f36b2a000001/51e06d302f5394c87600002a_webclip-comet.png" rel="apple-touch-icon"/><script type="text/javascript">var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-46779055-1'], ['_trackPageview']);(function() {  var ga = document.createElement('script');  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script><style>
 .wf-loading * {
     opacity: 0;
 }
-<defs>
-  <mask id="octomask">
-    <path fill="white" d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-    <path fill="black" d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" style="transform-origin: 130px 106px;" class="octo-arm"></path>
-    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="black" class="octo-body"></path>
-  </mask>
-</defs>
-<rect class="filler" width="100%" height="100%" mask="url(#octomask)"></rect>
-</svg></a>
-<style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></div><div class="section hero nerf-_v2"><div class="container-2 nerf_header_v2 w-container"><h1 class="nerf_title_v2">Skeleton-Aware Networks for Deep Motion Retargeting</h1><h1 class="nerf_subheader_v2">SIGGRAPH 2020</h1><div class="nerf_authors_list_single w-row"><div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="http://kfiraberman.github.io/" target="_blank" class="nerf_authors_v2">Kfir Aberman<span class="text-span_nerf_star">*</span><span class="superscript text-span_nerf">1*</span></a></div><div class="column w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://peizhuoli.github.io/" target="_blank" class="nerf_authors_v2">Peizhuo Li<span class="text-span_nerf_star">*</span><span class="superscript text-span_nerf">1*</span></a></div><div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://www.cse.huji.ac.il/~danix/" target="_blank" class="nerf_authors_v2">Dani Lischinski</a></div><div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://igl.ethz.ch/people/sorkine/" target="_blank" class="nerf_authors_v2">Olga S. Hornung<span class="text-span_nerf">2</span><span class="superscript"></span></a></div><div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://www.cs.tau.ac.il/~dcor/" target="_blank" class="nerf_authors_v2">Daniel Cohen-Or<span class="text-span_nerf">3</span></a></div><div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://cfcs.pku.edu.cn/baoquan" target="_blank" class="nerf_authors_v2">Baoquan Chen<span class="text-span_nerf">1</span></a></div></div><div class="columns-6 w-row"><div class="nerf_mobile_col_inst w-col w-col-4 w-col-small-4 w-col-tiny-4"><div class="nerf_mobile_inst"><span class="text-span_nerf">1 </span>Tel-Aviv University</div></div><div class="nerf_mobile_col_inst w-col w-col-4 w-col-small-4 w-col-tiny-4"><div class="nerf_mobile_inst"><span class="text-span_nerf">2</span> Google Research</div></div><div class="nerf_mobile_col_inst w-col w-col-4 w-col-small-4 w-col-tiny-4"><div class="nerf_mobile_inst"><span class="text-span_nerf">3 </span>UC San Diego</div></div></div><div class="nerf_authors_list_single nerf_authors_affiliation w-row"><div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Tel-Aviv University</h1></div><div class="column w-col w-col-2"><h1 class="nerf_affiliation_v2">Peking University</h1></div><div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Hebrew University</h1></div><div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">ETH Zurich</h1></div><div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Tel-Aviv University</h1></div><div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Peking University</h1></div></div><div class="div-block-10"><div class="nerf_equal_v2"><span class="text-span_nerf">*</span><span class="text-span_nerf_star">*</span>Denotes Equal Contribution</div></div>
+</style></head>
+<body>
+  <div class="section hero nerf-_v2">
+    <div class="container-2 nerf_header_v2 w-container">
+      <h1 class="nerf_title_v2">Skeleton-Aware Networks for Deep Motion Retargeting</h1>
+      <h1 class="nerf_subheader_v2">SIGGRAPH 2020</h1>
+      <div class="nerf_authors_list_single w-row">
+        <div class="w-col w-col-2 w-col-small-4 w-col-tiny-6">
+          <a href="http://kfiraberman.github.io/" target="_blank" class="nerf_authors_v2">Kfir Aberman<span class="text-span_nerf_star">*</span><span class="superscript text-span_nerf">1*</span></a></div>
+          <div class="column w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://peizhuoli.github.io/" target="_blank" class="nerf_authors_v2">Peizhuo Li<span class="text-span_nerf_star">*</span><span class="superscript text-span_nerf">1*</span></a></div>
+          <div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://www.cse.huji.ac.il/~danix/" target="_blank" class="nerf_authors_v2">Dani Lischinski</a></div>
+          <div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://igl.ethz.ch/people/sorkine/" target="_blank" class="nerf_authors_v2">Olga S. Hornung<span class="text-span_nerf">2</span><span class="superscript"></span></a></div><div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://www.cs.tau.ac.il/~dcor/" target="_blank" class="nerf_authors_v2">Daniel Cohen-Or<span class="text-span_nerf">3</span></a></div>
+          <div class="w-col w-col-2 w-col-small-4 w-col-tiny-6"><a href="https://cfcs.pku.edu.cn/baoquan" target="_blank" class="nerf_authors_v2">Baoquan Chen<span class="text-span_nerf">1</span></a></div></div>
+          <div class="columns-6 w-row"><div class="nerf_mobile_col_inst w-col w-col-4 w-col-small-4 w-col-tiny-4">
+            <div class="nerf_mobile_inst"><span class="text-span_nerf">1 </span>Tel-Aviv University</div></div>
+            <div class="nerf_mobile_col_inst w-col w-col-4 w-col-small-4 w-col-tiny-4"><div class="nerf_mobile_inst"><span class="text-span_nerf">2</span> Google Research</div></div>
+            <div class="nerf_mobile_col_inst w-col w-col-4 w-col-small-4 w-col-tiny-4"><div class="nerf_mobile_inst"><span class="text-span_nerf">3 </span>UC San Diego</div></div></div>
+            <div class="nerf_authors_list_single nerf_authors_affiliation w-row">
+              <div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Tel-Aviv University</h1></div>
+              <div class="column w-col w-col-2"><h1 class="nerf_affiliation_v2">Peking University</h1></div>
+              <div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Hebrew University</h1></div>
+              <div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">ETH Zurich</h1></div>
+              <div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Tel-Aviv University</h1></div>
+              <div class="w-col w-col-2"><h1 class="nerf_affiliation_v2">Peking University</h1></div></div>
+              <div class="div-block-10"><div class="nerf_equal_v2"><span class="text-span_nerf">*</span><span class="text-span_nerf_star">*</span>Denotes Equal Contribution</div></div>
+              <img src="./images/teaser.png" alt=""/>
+              <div class="link_column_nerf_v2 w-row"><div class="w-col w-col-4 w-col-small-4 w-col-tiny-4"><a href="https://arxiv.org/abs/xxx" class="link-block w-inline-block">
+                <img src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5cab99df4998decfbf9e218e_paper-01.png" alt="paper" srcset="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5cab99df4998decfbf9e218e_paper-01-p-500.png 500w, https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5cab99df4998decfbf9e218e_paper-01.png 672w" sizes="(max-width: 479px) 12vw, (max-width: 767px) 7vw, (max-width: 991px) 41.84375px, 56.6875px" class="paper_img image-8_nerf"/></a></div>
+              <div class="w-col w-col-4 w-col-small-4 w-col-tiny-4">
+                <a href="https://github.com/DeepMotionEditing/deep-motion-editing" target="_blank" class="link-block w-inline-block">
+                <img src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5cae3b53b42ebb3dd4175a82_68747470733a2f2f7777772e69636f6e66696e6465722e636f6d2f646174612f69636f6e732f6f637469636f6e732f313032342f6d61726b2d6769746875622d3235362e706e67.png" alt="paper" class="paper_img image-8 github_icon_nerf_v2"/></a></div>
+                <div class="column-2 w-col w-col-4 w-col-small-4 w-col-tiny-4"><a href="https://drive.googxxxx" target="_blank" class="link-block w-inline-block">
+                  <img src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5e7136849ee3b0a0c6a95151_database.svg" alt="paper" class="paper_img image-8_nerf nerf_db_icon"/></a></div></div>
+                  <div class="paper_code_nerf w-row">
+                    <div class="w-col w-col-4 w-col-small-4 w-col-tiny-4">
+                      <div class="text-block-2"><strong class="bold-text-nerf_v2">Paper</strong></div></div>
+                      <div class="w-col w-col-4 w-col-small-4 w-col-tiny-4"><div class="text-block-2">
+                        <strong class="bold-text-nerf_v2">&lt;/Code&gt;</strong></div></div>
+                        <div class="w-col w-col-4 w-col-small-4 w-col-tiny-4">
+                          <div class="text-block-2"><strong class="bold-text-nerf_v2">Data</strong></div></div></div>
+                          <div class="nerf_slide_nav w-slider-nav w-slider-nav-invert w-round"></div></div></div></div><div data-anchor="slide1" class="section nerf_section"><div class="w-container"><h2 class="grey-heading_nerf">Overview Video</h2><div style="padding-top:56.17021276595745%" id="w-node-e5e45b1d55ac-81500a5f" class="w-embed-youtubevideo stega_movie youtube"><iframe src="https://www.youtube.com/embed/ym8Tnmiz5N8?rel=1&amp;controls=1&amp;autoplay=0&amp;mute=0&amp;start=0" frameBorder="0" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:auto" allow="autoplay; encrypted-media" allowfullscreen=""></iframe></div></div></div><div data-anchor="slide1" class="section nerf_section"><div class="grey_container w-container"><h2 class="grey-heading_nerf">Abstract &amp; Method</h2><p class="paragraph-3 nerf_text">We introduce a novel deep learning framework for data-driven motion retargeting between skeletons, which may have different structure, yet corresponding to homeomorphic graphs.
+Importantly, our approach learns how to retarget without requiring any explicit pairing between the motions in the training set.
+We leverage the fact that different homeomorphic skeletons may be reduced to a common primal skeleton by a sequence of edge merging operations, which we refer to as skeletal pooling.</p>
 
-</body></html>
+<img src="./images/pool_to_primal.png" alt="" class="nerf_network"/>
+
+<p class="paragraph-3 nerf_text">Thus, our main technical contribution is the introduction of novel differentiable convolution, pooling, and unpooling operators.
+These operators are skeleton-aware, meaning that they explicitly account for the skeleton's hierarchical structure and joint adjacency, and together they serve to transform the original motion into a collection of deep temporal features associated with the joints of the primal skeleton.</p>
+
+<img src="./images/conv_and_pool.png" alt="" class="nerf_network"/>
+
+<p class="paragraph-3 nerf_text">In other words, our operators form the building blocks of a new deep motion processing framework that embeds the motion into a common latent space, shared by a collection of homeomorphic skeletons.
+Thus, retargeting can be achieved simply by encoding to, and decoding from this latent space.</p>
+</div></div>
+<div class="white_section_nerf">
+  <div class="w-container">
+  <h2 class="grey-heading_nerf">Intra-Structural Retargeting</h2>
+  <p class="paragraph-3 nerf_text nerf_results_text">Here we compare...</p>
+  <div><div class="video_class w-embed">
+    <video  width=100% height=100% muted controls loop preload="metadata" poster="https://xyz.jpg">
+  <source src="https://xyz.mp4" type="video/mp4">
+Your browser does not support the video tag.</video></div>
+<div class="video_class mobile w-embed">
+  <video  width=100% height=100% muted controls loop preload="metadata" poster="https://xyz.jpg">
+  <source src="https://xyz.mp4.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></div></div></div></div>
+<div data-anchor="slide1" class="section nerf_section"></div>
+<div class="white_section_nerf">
+  <div class="grey_container w-container">
+    <h2 class="grey-heading_nerf">Cross-Structural Retargeting</h2>
+    <p class="paragraph-3 nerf_text nerf_results_text">Here we compare...</p>
+    <div>
+      <div class="video_class w-embed">
+        <video  width=100% height=100% muted controls loop preload="metadata" poster="https://xyz.jpg">
+  <source src="https://xyz.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></div>
+<div class="video_class mobile w-embed">
+  <video  width=100% height=100% muted controls loop preload="metadata" poster="https://xyz.png">
+  <source src="https://xyz.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></div>
+<div class="video_class w-embed">
+  <video  width=100% height=100% muted controls loop preload="metadata" poster="https://xyz.png">
+  <source src="https://xyz.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></div>
+<div class="video_class mobile w-embed">
+  <video  width=100% height=100% muted controls loop preload="metadata" poster="https://xyz.jpg">
+  <source src="https://xyz.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></div></div></div></div>
+<div data-anchor="slide1" class="white_section_nerf">
+  <div class="w-container">
+    <h2 class="grey-heading_nerf">Another title</h2>
+    <p class="paragraph-3 stega_text"></p>
+    <p class="paragraph-3 nerf_text nerf_results_text">Here we show..</p><div class="video_class mobile w-embed"><video  width=100% height=100% muted controls loop preload="metadata" poster="https://storage.googleapis.com/nerf_data/website_renders/images/depth_reflower.jpg">
+  <source src="https://xyz.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video></div>
+
+
+<!-- Loads <model-viewer> for old browsers like IE11: -->
+<script nomodule
+    src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js">
+</script></div><div class="video_class mobile w-embed"><video  width=100% height=100% muted controls loop preload="metadata" poster="https://xyz.jpg">
+
+Your browser does not support the video tag.
+</video></div></div></div>
+
+<script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js?site=51e0d73d83d06baa7a00000f" type="text/javascript" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><script src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/js/webflow.3057c11af.js" type="text/javascript"></script><!--[if lte IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif]--></body></html>
