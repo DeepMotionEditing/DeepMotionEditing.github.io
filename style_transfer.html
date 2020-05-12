@@ -106,9 +106,9 @@ Furthermore, our framework is able to extract motion styles directly from videos
 
 <img src="./images/style_transfer/architecture.png" alt="" class="nerf_network architecture"/>
 
-<p class="paragraph-3 nerf_text">Moreover, while the content code is encoded from 3D joint rotations, we learn a common embedding for style from either 3D or 2D joint positions, enabling style extraction from videos.</p>
+<p class="paragraph-3 nerf_text">While the content code is encoded from 3D joint rotations, we learn a common embedding for style from either 3D or 2D joint positions, enabling style extraction from videos.</p>
 
-<!-- <img src="./images/style_transfer/clusters.png" alt="" class="nerf_network"/> -->
+<img src="./images/style_transfer/clusters.png" alt="" class="nerf_network"/>
 
 
   </div></div>
@@ -116,49 +116,56 @@ Furthermore, our framework is able to extract motion styles directly from videos
   <div class="white_section_nerf">
     <div class="w-container">
     <h2 class="grey-heading_nerf">Motion Style Transfer</h2>
-    <p class="paragraph-3 nerf_text nerf_results_text">TBD</p>
-    <!-- <div class="center">
+    <p class="paragraph-3 nerf_text nerf_results_text">Given content and style input motions our network can synthesize novel motoins that exhibit the content of one input and the style of the other.</p>
+    <div class="center">
       <span class="center">
-        <img class="special_characters" src="images/assymetric.gif">
-        <img class="special_characters" src="images/extra_limb.gif">
+        <img class="special_characters" src="images/style_transfer/3d_example_1.gif">
+        <img class="special_characters" src="images/style_transfer/3d_example_2.gif">
       </span>
-      <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Input</a></div>
+      <!-- <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Input</a></div>
       <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Retargeted Output</a></div>
       <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Input</a></div>
-      <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Retargeted Output</a></div>
-    </div> -->
+      <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Retargeted Output</a></div> -->
+    </div>
   </div></div>
 
   <div class="white_section_nerf">
     <div class="grey_container w-container">
     <h2 class="grey-heading_nerf">Motion Style Transfer from Video</h2>
-    <!-- <p class="paragraph-3 nerf_text nerf_results_text">Our framework can be used also for retargeting of skeletons with
-  the same structure, but different proportions. Here our method is compared to a naive adaptation of CycleGAN [Zhu et al. 2017] to the motion domain and to NKN
-  of Villegas et al. [2018]. The outputs are overlaid with the ground truth (green skeleton):</p>
-    <span class="center"><img class="skeleton_example" src="images/intra_structural.png"></span>
+    <p class="paragraph-3 nerf_text nerf_results_text">Our network can infer the style from 2D key-points extarcted from video and to apply it to the 3D animaiton.</p>
     <div class="center">
-      <span class="center"><img src="images/intra_structural.gif"></span>
+      <span class="center">
+        <img class="special_characters" src="images/style_transfer/2d_example_1.gif">
+        <img class="special_characters" src="images/style_transfer/2d_example_2.gif">
+      </span>
+      <!-- <span class="center"><img src="images/intra_structural.gif"></span>
       <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Input</a></div>
       <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">CycleGAN [2016] (Adaptation)</a></div>
       <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">NKN [2018]</a></div>
-      <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Ours</a></div>
-    </div> -->
+      <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Ours</a></div> -->
+    </div>
   </div></div>
+
+  <!-- <div class="white_section_nerf">
+    <div class="grey_container w-container">
+    <h2 class="grey-heading_nerf">Unseen Styles</h2>
+    <p class="paragraph-3 nerf_text nerf_results_text">TBC</p>
+    <div class="center">
+    </div>
+  </div></div> -->
 
   <div data-anchor="slide1" class="section nerf_section"></div>
   <div class="white_section_nerf">
     <div class="w-container">
       <h2 class="grey-heading_nerf">Motion Style Transfer - Comparison</h2>
-      <!-- <p class="paragraph-3 nerf_text nerf_results_text">Our method is compared to a naive adaptation of CycleGAN [Zhu et al. 2017] to the motion domain and to a
-  cross-structural version of NKN of Villegas et al. [2018]. The outputs are overlaid with the ground truth (green skeleton):</p>
-      <span class="center"><img class="skeleton_example" src="images/cross_structural.png"></span>
+      <p class="paragraph-3 nerf_text nerf_results_text">Qualitative comparison of our method to the approach of Holden et al. [2016].</p>
       <div class="center">
-        <span class="center"><img src="images/cross_structural.gif"></span>
-        <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Input</a></div>
-        <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">CycleGAN [2016] (Adaptation)</a></div>
-        <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">NKN [2018] (Adaptation)</a></div>
+        <span class="center"><img src="images/style_transfer/comparison_3d.gif"></span>
+        <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Content Input</a></div>
+        <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Style Input</a></div>
+        <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Holden et al. [2016]</a></div>
         <div class="w-col w-col-3 w-col-small-3 w-col-tiny-3"><a class="examples_header">Ours</a></div>
-      </div> -->
+      </div>
   </div></div>
 
   <div class="white_section_nerf">
@@ -181,7 +188,7 @@ Furthermore, our framework is able to extract motion styles directly from videos
     <h2 class="grey-heading_nerf">BibTeX</h2>
     <div class="grey_container w-container">
       <div class="bibtex">
-            <pre><code>@article{aberman2020skeleton,
+            <pre><code>@article{aberman2020unpaired,
     author = {Aberman, Kfir and Weng, Yijia and Lischinski, Dani and Cohen-Or, Daniel and Chen, Baoquan},
     title = {Unpaired Motion Style Transfer from Video to Animation},
     journal = {ACM Transactions on Graphics (TOG)},
